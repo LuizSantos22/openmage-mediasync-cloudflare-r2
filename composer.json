@@ -9,7 +9,7 @@
     "magento-hackathon/magento-composer-installer": "*"
   },
   "extra": {
-    "magento-root-dir": "../../..",
+    "magento-root-dir": ".",
     "map": [
       ["app/code/community/UltraDev/MediaSync", "app/code/community/UltraDev/MediaSync"],
       ["app/etc/modules/UltraDev_MediaSync.xml", "app/etc/modules/UltraDev_MediaSync.xml"],
