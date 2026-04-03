@@ -36,17 +36,10 @@ Instead of replacing Magento’s storage system, it **keeps local media and sync
 
 ### Option 1 — Composer (recommended)
 
-Add the Magento installer:
+Add the OpenMage installer:
 
 ```bash
-composer require magento-hackathon/magento-composer-installer
-```
-
-Install the module:
-
-```bash
-composer require ultradev/magento1-mediasync
-```
+composer require ultradev/openmage-mediasync-cloudflare-r2
 
 ---
 
