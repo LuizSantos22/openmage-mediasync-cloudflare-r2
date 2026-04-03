@@ -8,7 +8,7 @@ Synchronize Magento/OpenMage media files with a Cloudflare R2 bucket and serve t
 
 This module provides a lightweight solution to **sync media files** (primarily product images) from your OpenMage installation to a Cloudflare R2 bucket.
 
-Instead of replacing Magento’s storage system, it **keeps local media and syncs it to R2**, allowing you to serve assets through Cloudflare CDN.
+Instead of replacing Magento's storage system, it **keeps local media and syncs it to R2**, allowing you to serve assets through Cloudflare CDN.
 
 ---
 
@@ -36,18 +36,15 @@ Instead of replacing Magento’s storage system, it **keeps local media and sync
 
 ### Option 1 — Composer (recommended)
 
-Add the OpenMage installer:
-
+Install the module:
 ```bash
 composer require ultradev/openmage-mediasync-cloudflare-r2
-
----
+```
 
 ### Option 2 — Manual
 
 Copy files into your Magento root:
-
-```text
+```
 app/code/local/UltraDev/MediaSync
 app/etc/modules/UltraDev_MediaSync.xml
 shell/ultradev_media_sync.php
@@ -60,8 +57,7 @@ Then clear cache.
 ## ⚙️ Configuration
 
 Go to:
-
-```text
+```
 System > Configuration > UltraDev Media Sync
 ```
 
@@ -90,12 +86,9 @@ Triggered on:
 
 * Product save (`catalog_product_save_after`)
 
----
-
 ### Manual Sync (CLI)
 
 Run:
-
 ```bash
 php shell/ultradev_media_sync.php
 ```
@@ -116,18 +109,11 @@ This will sync all files inside `/media`.
 ## 🧠 Best Practice
 
 After syncing, set:
-
-```text
+```
 System > Configuration > Web > Base URLs
 ```
 
-Change:
-
-```text
-Base Media URL
-```
-
-To your Cloudflare CDN URL.
+Change **Base Media URL** to your Cloudflare CDN URL.
 
 ---
 
@@ -136,19 +122,15 @@ To your Cloudflare CDN URL.
 ### Files not uploading
 
 * Check logs:
-
-```text
+```
 var/log/ultradev_mediasync.log
 ```
 
 * Verify credentials and endpoint
 
----
-
 ### Class not found (AWS SDK)
 
 Run:
-
 ```bash
 composer install
 ```
@@ -164,6 +146,3 @@ Proprietary — UltraDev
 ## 👨‍💻 Author
 
 UltraDev
-
----
-
