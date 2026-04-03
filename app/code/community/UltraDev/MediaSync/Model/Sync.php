@@ -1,7 +1,5 @@
-<?php
-
+﻿<?php
 use Aws\S3\S3Client;
-
 class UltraDev_MediaSync_Model_Sync
 {
     protected $client;
@@ -10,7 +8,6 @@ class UltraDev_MediaSync_Model_Sync
     {
         if (!$this->client) {
             require_once Mage::getBaseDir() . '/vendor/autoload.php';
-
             $this->client = new S3Client([
                 'version'  => 'latest',
                 'region'   => 'auto',
@@ -22,12 +19,9 @@ class UltraDev_MediaSync_Model_Sync
                     ),
                 ],
                 'use_path_style_endpoint' => true,
-                'http' => [
-                    'timeout' => 10,
-                ],
+                'http' => ['timeout' => 30],
             ]);
         }
-
         return $this->client;
     }
 
@@ -36,29 +30,31 @@ class UltraDev_MediaSync_Model_Sync
         return Mage::getStoreConfig('ultradev_mediasync/general/bucket');
     }
 
+    public function isSkipped($relativePath)
+    {
+        $skipped = Mage::helper('ultradev_mediasync')->getSkippedFolders();
+        foreach ($skipped as $folder) {
+            if (strpos($relativePath, $folder . '/') === 0 || strpos($relativePath, '/' . $folder . '/') !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function upload($filePath, $key)
     {
-        if (!file_exists($filePath)) {
-            return;
-        }
-
+        if (!file_exists($filePath)) return;
+        $relative = str_replace('media/', '', $key);
+        if ($this->isSkipped($relative)) return;
         try {
             $result = $this->getClient()->headObject([
                 'Bucket' => $this->getBucket(),
                 'Key'    => $key,
             ]);
-
-            $remoteSize = (int) $result['ContentLength'];
-            $localSize  = filesize($filePath);
-
-            if ($remoteSize === $localSize) {
-                return;
-            }
-
+            if ((int)$result['ContentLength'] === filesize($filePath)) return;
         } catch (Exception $e) {
-            // objeto não existe → continua
+            // object does not exist, proceed
         }
-
         for ($i = 0; $i < 3; $i++) {
             try {
                 $this->getClient()->putObject([
@@ -66,10 +62,8 @@ class UltraDev_MediaSync_Model_Sync
                     'Key'        => $key,
                     'SourceFile' => $filePath,
                 ]);
-
-                Mage::log("Uploaded: $key", null, 'ultradev_mediasync.log');
+                Mage::log("R2 Uploaded: $key", null, 'ultradev_mediasync.log');
                 return;
-
             } catch (Exception $e) {
                 Mage::logException($e);
                 sleep(1);

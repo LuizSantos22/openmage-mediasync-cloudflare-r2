@@ -2,7 +2,7 @@
 <config>
     <modules>
         <UltraDev_MediaSync>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </UltraDev_MediaSync>
     </modules>
     <global>
@@ -25,6 +25,30 @@
                     </ultradev_mediasync>
                 </observers>
             </catalog_product_save_after>
+            <catalog_category_save_after>
+                <observers>
+                    <ultradev_mediasync>
+                        <class>ultradev_mediasync/observer</class>
+                        <method>syncCategoryMedia</method>
+                    </ultradev_mediasync>
+                </observers>
+            </catalog_category_save_after>
+            <cms_block_save_after>
+                <observers>
+                    <ultradev_mediasync>
+                        <class>ultradev_mediasync/observer</class>
+                        <method>syncCmsMedia</method>
+                    </ultradev_mediasync>
+                </observers>
+            </cms_block_save_after>
+            <cms_page_save_after>
+                <observers>
+                    <ultradev_mediasync>
+                        <class>ultradev_mediasync/observer</class>
+                        <method>syncCmsMedia</method>
+                    </ultradev_mediasync>
+                </observers>
+            </cms_page_save_after>
         </events>
     </global>
     <adminhtml>
