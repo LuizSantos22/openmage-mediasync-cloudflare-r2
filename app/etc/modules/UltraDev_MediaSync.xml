@@ -3,7 +3,7 @@
     <modules>
         <UltraDev_MediaSync>
             <active>true</active>
-            <codePool>local</codePool>
+            <codePool>community</codePool>
         </UltraDev_MediaSync>
     </modules>
 </config>
