@@ -1,6 +1,6 @@
 {
-  "name": "ultradev/magento1-mediasync",
-  "description": "Sync Magento media with Cloudflare R2",
+  "name": "ultradev/openmage-mediasync-cloudflare-r2",
+  "description": "Sync Magento/OpenMage media files with Cloudflare R2 and serve via CDN",
   "type": "magento-module",
   "license": "proprietary",
   "require": {
