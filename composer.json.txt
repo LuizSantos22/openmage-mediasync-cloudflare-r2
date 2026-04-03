@@ -1,0 +1,19 @@
+{
+  "name": "ultradev/magento1-mediasync",
+  "description": "Sync Magento media with Cloudflare R2",
+  "type": "magento-module",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.1",
+    "aws/aws-sdk-php": "^3.0",
+    "magento-hackathon/magento-composer-installer": "^3.0"
+  },
+  "extra": {
+    "magento-root-dir": "../../..",
+    "map": [
+      ["app/code/local/UltraDev/MediaSync", "app/code/local/UltraDev/MediaSync"],
+      ["app/etc/modules/UltraDev_MediaSync.xml", "app/etc/modules/UltraDev_MediaSync.xml"],
+      ["shell/ultradev_media_sync.php", "shell/ultradev_media_sync.php"]
+    ]
+  }
+}

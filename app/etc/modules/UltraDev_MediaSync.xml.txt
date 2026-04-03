@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <UltraDev_MediaSync>
+            <active>true</active>
+            <codePool>local</codePool>
+        </UltraDev_MediaSync>
+    </modules>
+</config>

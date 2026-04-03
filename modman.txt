@@ -1,0 +1,3 @@
+app/code/local/UltraDev/MediaSync/ app/code/local/UltraDev/MediaSync/
+app/etc/modules/UltraDev_MediaSync.xml app/etc/modules/UltraDev_MediaSync.xml
+shell/ultradev_media_sync.php shell/ultradev_media_sync.php
