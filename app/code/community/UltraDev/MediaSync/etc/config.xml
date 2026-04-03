@@ -5,20 +5,17 @@
             <version>1.0.1</version>
         </UltraDev_MediaSync>
     </modules>
-
     <global>
         <models>
             <ultradev_mediasync>
                 <class>UltraDev_MediaSync_Model</class>
             </ultradev_mediasync>
         </models>
-
         <helpers>
             <ultradev_mediasync>
                 <class>UltraDev_MediaSync_Helper</class>
             </ultradev_mediasync>
         </helpers>
-
         <events>
             <catalog_product_save_after>
                 <observers>
@@ -30,4 +27,36 @@
             </catalog_product_save_after>
         </events>
     </global>
+    <adminhtml>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <ultradev_mediasync translate="title">
+                                            <title>UltraDev Media Sync</title>
+                                        </ultradev_mediasync>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+    <default>
+        <ultradev_mediasync>
+            <general>
+                <enabled>0</enabled>
+                <bucket></bucket>
+                <endpoint></endpoint>
+                <access_key></access_key>
+                <secret_key></secret_key>
+            </general>
+        </ultradev_mediasync>
+    </default>
 </config>
