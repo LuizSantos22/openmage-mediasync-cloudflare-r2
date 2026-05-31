@@ -1,8 +1,8 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <config>
     <modules>
         <UltraDev_MediaSync>
-            <version>1.0.2</version>
+            <version>1.1.0</version>
         </UltraDev_MediaSync>
     </modules>
     <global>
@@ -49,8 +49,36 @@
                     </ultradev_mediasync>
                 </observers>
             </cms_page_save_after>
+            <adminhtml_cache_flush_all>
+                <observers>
+                    <ultradev_mediasync_flush>
+                        <class>ultradev_mediasync/observer</class>
+                        <method>flushFbminifyFromR2</method>
+                    </ultradev_mediasync_flush>
+                </observers>
+            </adminhtml_cache_flush_all>
+            <adminhtml_cache_flush_system>
+                <observers>
+                    <ultradev_mediasync_flush_system>
+                        <class>ultradev_mediasync/observer</class>
+                        <method>flushFbminifyFromR2</method>
+                    </ultradev_mediasync_flush_system>
+                </observers>
+            </adminhtml_cache_flush_system>
         </events>
     </global>
+    <frontend>
+        <events>
+            <http_response_send_before>
+                <observers>
+                    <ultradev_mediasync_fbminify>
+                        <class>ultradev_mediasync/observer</class>
+                        <method>syncFbminify</method>
+                    </ultradev_mediasync_fbminify>
+                </observers>
+            </http_response_send_before>
+        </events>
+    </frontend>
     <adminhtml>
         <acl>
             <resources>
@@ -81,6 +109,9 @@
                 <access_key></access_key>
                 <secret_key></secret_key>
             </general>
+            <fbminify>
+                <enabled>0</enabled>
+            </fbminify>
         </ultradev_mediasync>
     </default>
 </config>
