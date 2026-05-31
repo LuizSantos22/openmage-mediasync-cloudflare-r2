@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 class UltraDev_MediaSync_Model_Observer
 {
     private function getSync()
@@ -9,6 +9,12 @@ class UltraDev_MediaSync_Model_Observer
     private function isEnabled()
     {
         return Mage::helper('ultradev_mediasync')->isEnabled();
+    }
+
+    private function isFbminifyActive()
+    {
+        return Mage::helper('core')->isModuleEnabled('Fballiano_CssjsMinify')
+            && Mage::getStoreConfigFlag('ultradev_mediasync/fbminify/enabled');
     }
 
     public function syncProductMedia(Varien_Event_Observer $observer)
@@ -56,6 +62,65 @@ class UltraDev_MediaSync_Model_Observer
             if (file_exists($filePath)) {
                 $sync->upload($filePath, 'media/' . $relativePath);
             }
+        }
+    }
+
+    public function syncFbminify(Varien_Event_Observer $observer)
+    {
+        if (!$this->isEnabled()) return;
+        if (!$this->isFbminifyActive()) return;
+
+        $mediaDir = Mage::getBaseDir('media');
+        $fbminifyDir = $mediaDir . '/fbminify/';
+        if (!is_dir($fbminifyDir)) return;
+
+        $files = scandir($fbminifyDir);
+        if ($files === false) return;
+
+        // Arquivo de controle local — sem nenhuma chamada ao R2
+        $syncedFile = Mage::getBaseDir('var') . '/fbminify_synced.json';
+        $synced = [];
+        if (file_exists($syncedFile)) {
+            $decoded = json_decode(file_get_contents($syncedFile), true);
+            if (is_array($decoded)) $synced = $decoded;
+        }
+
+        $sync = $this->getSync();
+        $changed = false;
+
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') continue;
+            $filePath = $fbminifyDir . $file;
+            if (!is_file($filePath)) continue;
+            if (!preg_match('/\.(js|css)$/', $file)) continue;
+
+            $key = 'media/fbminify/' . $file;
+
+            // Só faz upload se ainda não foi sincronizado
+            if (!isset($synced[$key])) {
+                $sync->upload($filePath, $key);
+                $synced[$key] = time();
+                $changed = true;
+            }
+        }
+
+        // Salva o controle local apenas se houve mudanças
+        if ($changed) {
+            file_put_contents($syncedFile, json_encode($synced));
+        }
+    }
+
+    public function flushFbminifyFromR2(Varien_Event_Observer $observer)
+    {
+        if (!$this->isEnabled()) return;
+        if (!$this->isFbminifyActive()) return;
+
+        $this->getSync()->deleteFbminifyFolder();
+
+        // Apaga o arquivo de controle local para forçar re-sync após flush
+        $syncedFile = Mage::getBaseDir('var') . '/fbminify_synced.json';
+        if (file_exists($syncedFile)) {
+            unlink($syncedFile);
         }
     }
 }
