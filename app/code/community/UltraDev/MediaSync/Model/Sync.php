@@ -1,5 +1,6 @@
-﻿<?php
+<?php
 use Aws\S3\S3Client;
+
 class UltraDev_MediaSync_Model_Sync
 {
     protected $client;
@@ -46,6 +47,8 @@ class UltraDev_MediaSync_Model_Sync
         if (!file_exists($filePath)) return;
         $relative = str_replace('media/', '', $key);
         if ($this->isSkipped($relative)) return;
+        if (Mage::helper('ultradev_mediasync')->isSkippedFile($relative)) return;
+
         try {
             $result = $this->getClient()->headObject([
                 'Bucket' => $this->getBucket(),
@@ -55,6 +58,7 @@ class UltraDev_MediaSync_Model_Sync
         } catch (Exception $e) {
             // object does not exist, proceed
         }
+
         for ($i = 0; $i < 3; $i++) {
             try {
                 $this->getClient()->putObject([
@@ -68,6 +72,40 @@ class UltraDev_MediaSync_Model_Sync
                 Mage::logException($e);
                 sleep(1);
             }
+        }
+    }
+
+    public function delete($key)
+    {
+        try {
+            $this->getClient()->deleteObject([
+                'Bucket' => $this->getBucket(),
+                'Key'    => $key,
+            ]);
+            Mage::log("R2 Deleted: $key", null, 'ultradev_mediasync.log');
+        } catch (Exception $e) {
+            Mage::logException($e);
+        }
+    }
+
+    public function deleteFbminifyFolder()
+    {
+        try {
+            $prefix = 'media/fbminify/';
+            $objects = $this->getClient()->listObjects([
+                'Bucket' => $this->getBucket(),
+                'Prefix' => $prefix,
+            ]);
+            if (empty($objects['Contents'])) return;
+            foreach ($objects['Contents'] as $object) {
+                $this->getClient()->deleteObject([
+                    'Bucket' => $this->getBucket(),
+                    'Key'    => $object['Key'],
+                ]);
+                Mage::log("R2 Deleted: " . $object['Key'], null, 'ultradev_mediasync.log');
+            }
+        } catch (Exception $e) {
+            Mage::logException($e);
         }
     }
 }
