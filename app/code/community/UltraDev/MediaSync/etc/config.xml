@@ -49,6 +49,14 @@
                     </ultradev_mediasync>
                 </observers>
             </cms_page_save_after>
+            <catalog_product_image_resize_after>
+                <observers>
+                    <ultradev_mediasync_resize>
+                        <class>ultradev_mediasync/observer</class>
+                        <method>syncResizedImage</method>
+                    </ultradev_mediasync_resize>
+                </observers>
+            </catalog_product_image_resize_after>
             <adminhtml_cache_flush_all>
                 <observers>
                     <ultradev_mediasync_flush>
