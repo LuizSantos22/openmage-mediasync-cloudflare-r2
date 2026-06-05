@@ -65,6 +65,35 @@ class UltraDev_MediaSync_Model_Observer
         }
     }
 
+    /**
+     * Intercepta thumbnails gerados pelo OpenMage e faz upload para o R2.
+     * Disparado pelo evento catalog_product_image_resize_after.
+     * Assim qualquer página (sucesso, produto, carrinho) que gerar um resize
+     * automaticamente sincroniza com o CDN sem precisar editar templates.
+     */
+    public function syncResizedImage(Varien_Event_Observer $observer)
+    {
+        if (!$this->isEnabled()) return;
+
+        $imageModel = $observer->getObject();
+        if (!$imageModel) return;
+
+        $filePath = (string) $imageModel->getNewFile();
+        if (!$filePath || !file_exists($filePath)) return;
+
+        $mediaDir = Mage::getBaseDir('media') . DS;
+
+        if (strpos($filePath, $mediaDir) === 0) {
+            $key = 'media/' . substr($filePath, strlen($mediaDir));
+        } else {
+            $pos = strpos($filePath, '/media/');
+            if ($pos === false) return;
+            $key = substr($filePath, $pos + 1);
+        }
+
+        $this->getSync()->upload($filePath, $key);
+    }
+
     public function syncFbminify(Varien_Event_Observer $observer)
     {
         if (!$this->isEnabled()) return;
@@ -77,7 +106,6 @@ class UltraDev_MediaSync_Model_Observer
         $files = scandir($fbminifyDir);
         if ($files === false) return;
 
-        // Arquivo de controle local — sem nenhuma chamada ao R2
         $syncedFile = Mage::getBaseDir('var') . '/fbminify_synced.json';
         $synced = [];
         if (file_exists($syncedFile)) {
@@ -96,7 +124,6 @@ class UltraDev_MediaSync_Model_Observer
 
             $key = 'media/fbminify/' . $file;
 
-            // Só faz upload se ainda não foi sincronizado
             if (!isset($synced[$key])) {
                 $sync->upload($filePath, $key);
                 $synced[$key] = time();
@@ -104,7 +131,6 @@ class UltraDev_MediaSync_Model_Observer
             }
         }
 
-        // Salva o controle local apenas se houve mudanças
         if ($changed) {
             file_put_contents($syncedFile, json_encode($synced));
         }
@@ -117,7 +143,6 @@ class UltraDev_MediaSync_Model_Observer
 
         $this->getSync()->deleteFbminifyFolder();
 
-        // Apaga o arquivo de controle local para forçar re-sync após flush
         $syncedFile = Mage::getBaseDir('var') . '/fbminify_synced.json';
         if (file_exists($syncedFile)) {
             unlink($syncedFile);
